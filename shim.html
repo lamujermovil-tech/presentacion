@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<!-- saved from url=(0132)blob:https://151oa1fd74mvuq7c25wck6bal9x9zomf69yjqsagurzndl687t-h775241406.scf.usercontent.goog/f0d5bedc-ce9d-4bed-9547-47d5e2e15b45 -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjM3MTE1MjViZGZmNmM4YmM2NjM2NDE3ZjgwOGMzYzFlYTkyN2E0YmMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbVwvZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwOTYxNDc5MzA2MzY0MjcyMzE1NyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzFlOTRhN2M4YjFjYjMyNzhfaW5ub3ZhY2lvbl9zaXN0ZW1hdGljYS05ODIifSwiZXhwIjoxNzUyMTYzMDc5LCJpYXQiOjE3NTIxNTk0NzksImFsZyI6IlJTMjU2In0.wr2jBS3mDFdpYpg8rwUMT0vINPWZKEB3IigjCGeAs4OsZeZGx1IqXbrig_kDZrB5ILdLqhSnIXRdWp_eWqogXHT7mQFCmsEh0SsiFpXAJ86Vw5_o_UzQ30XnX3RHjYVFk1bAUqz0R61MnpZQ8RTqLlYbYrG7cLPyfMi9FyGYSaQovohRQBQpkQs80-3DEUFhDq6mYMGJRpuoQ5T1EU-4MhEvc5CuL7vO2swWHxVVTlxhMVReHRsyUwDe33amh2-shNXGcbSZDIKNj1ZMK1eSqujTghefNbYdiV3Tk692Qu8K6CRWQoZARKwxOvfFpvCrcgpOlT1IWkKZnsPgdSQzRA","c_1e94a7c8b1cb3278_innovacion_sistematica-982")</script><script>(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script>
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script>((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-2.5-flash-preview-04-17","imageModelName":"imagen-3.0-generate-002","imageEditModelName":"gemini-2.0-flash-preview-image-generation","videoModelName":"veo-2.0-generate-001","deprecatedTextModelNames":["gemini-2.0-flash"]})</script><script>(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistematización de los Procesos de Innovación</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .prose {
+            max-width: none;
+        }
+        .prose strong {
+            color: #374151; /* gray-700 */
+        }
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .details-content.visible {
+            max-height: 500px; /* Adjust as needed */
+            transition: max-height 0.5s ease-in;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.visible{visibility:visible}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mr-3{margin-right:0.75rem}.mr-4{margin-right:1rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.flex{display:flex}.grid{display:grid}.h-20{height:5rem}.h-24{height:6rem}.h-6{height:1.5rem}.min-h-\[550px\]{min-height:550px}.min-h-screen{min-height:100vh}.w-10\/12{width:83.333333%}.w-20{width:5rem}.w-24{width:6rem}.w-6{width:1.5rem}.w-6\/12{width:50%}.w-8\/12{width:66.666667%}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.flex-shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.border{border-width:1px}.border-t{border-top-width:1px}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208 / var(--tw-border-opacity, 1))}.border-indigo-200{--tw-border-opacity:1;border-color:rgb(199 210 254 / var(--tw-border-opacity, 1))}.border-orange-200{--tw-border-opacity:1;border-color:rgb(254 215 170 / var(--tw-border-opacity, 1))}.border-yellow-200{--tw-border-opacity:1;border-color:rgb(254 240 138 / var(--tw-border-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-indigo-200{--tw-bg-opacity:1;background-color:rgb(199 210 254 / var(--tw-bg-opacity, 1))}.bg-indigo-300{--tw-bg-opacity:1;background-color:rgb(165 180 252 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-orange-50{--tw-bg-opacity:1;background-color:rgb(255 247 237 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-50{--tw-bg-opacity:1;background-color:rgb(254 252 232 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.text-indigo-500{--tw-text-opacity:1;color:rgb(99 102 241 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-indigo-700{--tw-text-opacity:1;color:rgb(67 56 202 / var(--tw-text-opacity, 1))}.text-indigo-800{--tw-text-opacity:1;color:rgb(55 48 163 / var(--tw-text-opacity, 1))}.text-indigo-900{--tw-text-opacity:1;color:rgb(49 46 129 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-orange-800{--tw-text-opacity:1;color:rgb(154 52 18 / var(--tw-text-opacity, 1))}.text-teal-600{--tw-text-opacity:1;color:rgb(13 148 136 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-500{--tw-text-opacity:1;color:rgb(234 179 8 / var(--tw-text-opacity, 1))}.text-yellow-700{--tw-text-opacity:1;color:rgb(161 98 7 / var(--tw-text-opacity, 1))}.text-yellow-800{--tw-text-opacity:1;color:rgb(133 77 14 / var(--tw-text-opacity, 1))}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.hover\:bg-indigo-700:hover{--tw-bg-opacity:1;background-color:rgb(67 56 202 / var(--tw-bg-opacity, 1))}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\:opacity-50:disabled{opacity:0.5}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:p-12{padding:3rem}.md\:p-8{padding:2rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-xl{font-size:1.25rem;line-height:1.75rem}}</style></head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <main class="flex-grow container mx-auto p-4 md:p-8 flex items-center justify-center">
+        <div id="presentation-container" class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col">
+            <div class="p-8 md:p-12 min-h-[550px] flex flex-col justify-center">
+                <!-- Slide 1: Title -->
+                <div id="slide-1" class="slide" style="display: none;">
+                    <div class="text-center">
+                        <span class="text-indigo-600 font-semibold">Proceso de Innovación</span>
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">Sistematización de la Innovación</h1>
+                        <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">Cómo transformar la creatividad esporádica en un motor de crecimiento predecible y continuo.</p>
+                        <p class="text-md text-gray-500 mt-4">Una presentación de: Carmen Martín Robledo</p>
+                        <div class="mt-8">
+                            <svg class="w-24 h-24 mx-auto text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Why Systematize? -->
+                <div id="slide-2" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">¿Por qué Sistematizar?</h2>
+                    <div class="grid md:grid-cols-2 gap-6 text-left">
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="font-semibold text-lg text-indigo-700 mb-2">De la Suerte a la Estrategia</h3>
+                            <p class="text-gray-600">Elimina la dependencia de "chispazos" de genialidad. Crea un flujo constante de oportunidades.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="font-semibold text-lg text-indigo-700 mb-2">Reducción de Riesgos</h3>
+                            <p class="text-gray-600">Valida ideas temprano, descartando las inviables antes de invertir grandes recursos.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="font-semibold text-lg text-indigo-700 mb-2">Cultura de Innovación</h3>
+                            <p class="text-gray-600">Involucra a toda la organización, haciendo que la innovación sea responsabilidad de todos.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="font-semibold text-lg text-indigo-700 mb-2">Eficiencia y Agilidad</h3>
+                            <p class="text-gray-600">Optimiza el uso de recursos y acelera el tiempo de la idea al mercado (Time-to-Market).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Culture -->
+                <div id="slide-3" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Creando una Cultura de Innovación</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start"><span class="text-indigo-500 mr-3 mt-1">▶</span><div><strong class="text-gray-800">Seguridad Psicológica:</strong> Fomentar un ambiente donde el fracaso es visto como una oportunidad de aprendizaje, no como un error a castigar.</div></li>
+                        <li class="flex items-start"><span class="text-indigo-500 mr-3 mt-1">▶</span><div><strong class="text-gray-800">Apoyo del Liderazgo:</strong> Los líderes deben ser los principales promotores, asignando recursos y eliminando barreras.</div></li>
+                        <li class="flex items-start"><span class="text-indigo-500 mr-3 mt-1">▶</span><div><strong class="text-gray-800">Colaboración Radical:</strong> Romper silos departamentales. Las mejores ideas surgen de la intersección de diferentes perspectivas.</div></li>
+                        <li class="flex items-start"><span class="text-indigo-500 mr-3 mt-1">▶</span><div><strong class="text-gray-800">Incentivos y Reconocimiento:</strong> Premiar no solo los éxitos, sino también los intentos audaces y el aprendizaje validado.</div></li>
+                    </ul>
+                </div>
+
+                <!-- Slide 4: The Funnel -->
+                <div id="slide-4" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2 text-center">El Embudo de la Innovación</h2>
+                    <p class="text-center text-gray-600 mb-8">Un modelo visual para gestionar el flujo de ideas hacia resultados concretos.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-center"><div class="w-full bg-indigo-100 text-indigo-800 p-4 rounded-lg text-center shadow"><span class="font-bold text-lg">FASE 1: Generación de Ideas</span><p class="text-sm">Captura masiva de ideas.</p></div></div>
+                        <div class="flex justify-center"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg></div>
+                        <div class="flex items-center justify-center"><div class="w-10/12 bg-indigo-200 text-indigo-900 p-4 rounded-lg text-center shadow"><span class="font-bold text-lg">FASE 2: Evaluación</span><p class="text-sm">Filtrado según criterios.</p></div></div>
+                        <div class="flex justify-center"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg></div>
+                        <div class="flex items-center justify-center"><div class="w-8/12 bg-indigo-300 text-indigo-900 p-4 rounded-lg text-center shadow"><span class="font-bold text-lg">FASE 3: Desarrollo</span><p class="text-sm">Creación de prototipos y MVP.</p></div></div>
+                        <div class="flex justify-center"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg></div>
+                        <div class="flex items-center justify-center"><div class="w-6/12 bg-indigo-500 text-white p-4 rounded-lg text-center shadow"><span class="font-bold text-lg">FASE 4: Lanzamiento</span><p class="text-sm">Implementación y medición.</p></div></div>
+                    </div>
+                </div>
+                
+                <!-- Slide 5: Phase 1 - Ideation (Simplified) -->
+                <div id="slide-5" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-1"><span class="text-indigo-600">Fase 1:</span> Generación de Ideas</h2>
+                    <p class="text-gray-600 mb-6">El objetivo es la cantidad sobre la calidad. Las ideas pueden venir de muchas fuentes:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card-hover-effect border border-gray-200 p-4 rounded-lg"><strong>Clientes:</strong> Encuestas, entrevistas, feedback directo.</div>
+                        <div class="card-hover-effect border border-gray-200 p-4 rounded-lg"><strong>Empleados:</strong> Buzones de sugerencias, hackathons, talleres.</div>
+                        <div class="card-hover-effect border border-gray-200 p-4 rounded-lg"><strong>Mercado:</strong> Análisis de competencia y tendencias emergentes.</div>
+                        <div class="card-hover-effect border border-gray-200 p-4 rounded-lg"><strong>Tecnología:</strong> Vigilancia de nuevas plataformas, patentes y avances.</div>
+                        <div class="card-hover-effect border border-gray-200 p-4 rounded-lg"><strong>Partners:</strong> Innovación abierta con proveedores, universidades o startups.</div>
+                        <div class="card-hover-effect bg-indigo-50 border-indigo-200 p-4 rounded-lg"><strong>Inteligencia Artificial:</strong> Usar modelos de IA para generar conceptos, analizar datos de mercado y descubrir patrones ocultos.</div>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Phase 2 - Evaluation -->
+                <div id="slide-6" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-1"><span class="text-indigo-600">Fase 2:</span> Evaluación y Selección</h2>
+                    <p class="text-gray-600 mb-6">Filtra las ideas con un marco de criterios claro y objetivo.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg"><svg class="w-6 h-6 text-indigo-500 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Alineamiento Estratégico:</strong> ¿Encaja con los objetivos de la empresa?</div></div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg"><svg class="w-6 h-6 text-indigo-500 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><div><strong>Potencial de Mercado:</strong> ¿Existe una necesidad real y un mercado suficiente?</div></div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg"><svg class="w-6 h-6 text-indigo-500 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><div><strong>Viabilidad Técnica:</strong> ¿Podemos construirlo?</div></div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg"><svg class="w-6 h-6 text-indigo-500 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 12v-2m0 2v.01M12 12a2 2 0 00-2 2h4a2 2 0 00-2-2zm0 0V9.5M12 12a9 9 0 110-18 9 9 0 010 18z"></path></svg><div><strong>Impacto Financiero:</strong> ¿Cuál es el ROI esperado y la inversión requerida?</div></div>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Social Value -->
+                <div id="slide-7" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-1"><span class="text-green-600">Criterio Adicional:</span> Valor Social</h2>
+                    <p class="text-gray-600 mb-6">Una innovación exitosa no solo es rentable, también puede generar un impacto positivo en la sociedad.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h3 class="font-semibold text-lg text-green-800 mb-2">Innovación con Propósito</h3>
+                            <p class="text-green-700">Evaluar cómo una idea contribuye a resolver problemas sociales o medioambientales. Esto no solo mejora la reputación de la marca, sino que también conecta con una nueva generación de consumidores conscientes.</p>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>Sostenibilidad:</strong> ¿Reduce la huella de carbono o promueve la economía circular?</li>
+                            <li><strong>Inclusión:</strong> ¿Facilita el acceso a servicios para comunidades desatendidas?</li>
+                            <li><strong>Bienestar:</strong> ¿Mejora la salud, la educación o la calidad de vida de las personas?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Phase 3 -->
+                <div id="slide-8" class="slide" style="display: none;">
+                     <h2 class="text-3xl font-bold text-gray-900 mb-1"><span class="text-indigo-600">Fase 3:</span> Desarrollo y Pruebas</h2>
+                     <p class="text-gray-600 mb-6">Transforma la idea seleccionada en un producto tangible y validado.</p>
+                     <ul class="list-disc list-inside space-y-3 text-gray-700">
+                        <li><strong>Prototipado Rápido:</strong> Crea versiones de baja fidelidad (bocetos, wireframes, maquetas) para visualizar la solución y obtener feedback temprano y barato.</li>
+                        <li><strong>Producto Mínimo Viable (MVP):</strong> Construye la versión más simple del producto que resuelva el problema principal de un grupo de usuarios (early adopters).</li>
+                        <li><strong>Metodologías Ágiles:</strong> Usa Sprints (Scrum) o flujo continuo (Kanban) para un desarrollo iterativo e incremental, adaptándote al feedback continuo.</li>
+                    </ul>
+                </div>
+
+                <!-- Slide 9: Phase 4 -->
+                <div id="slide-9" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-1"><span class="text-teal-600">Fase 4:</span> Lanzamiento y Escalado</h2>
+                    <p class="text-gray-600 mb-6">Lleva la innovación al mercado y asegura su crecimiento sostenible.</p>
+                    <ul class="list-disc list-inside space-y-3 text-gray-700">
+                        <li><strong>Estrategia Go-to-Market:</strong> Planifica cómo llegarás a tus clientes: marketing, ventas, comunicación y canales de distribución.</li>
+                        <li><strong>Lanzamiento Piloto (Soft Launch):</strong> Lanza a un segmento reducido del mercado para probar la operación y la respuesta antes del lanzamiento masivo.</li>
+                        <li><strong>Escalado:</strong> Una vez validado el modelo, invierte en la expansión para capturar todo el mercado objetivo.</li>
+                    </ul>
+                </div>
+
+                <!-- Slide 10: Roles -->
+                <div id="slide-10" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Roles y Equipos de Innovación</h2>
+                    <p class="text-gray-600 mb-6">La innovación requiere personas con roles definidos.</p>
+                     <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-100 p-4 rounded-lg"><strong>Innovation Champions:</strong> Empleados entusiastas que promueven la cultura y facilitan la generación de ideas en sus equipos.</div>
+                        <div class="bg-gray-100 p-4 rounded-lg"><strong>Product Owner / Manager:</strong> Define la visión del producto, gestiona el backlog y representa los intereses del cliente y del negocio.</div>
+                        <div class="bg-gray-100 p-4 rounded-lg"><strong>Equipos Multifuncionales:</strong> Grupos con perfiles diversos (diseño, ingeniería, marketing) que trabajan juntos en un proyecto de innovación.</div>
+                        <div class="bg-gray-100 p-4 rounded-lg"><strong>Comité de Innovación:</strong> Grupo de líderes que evalúa las ideas de mayor potencial y asigna los recursos necesarios.</div>
+                    </div>
+                </div>
+
+                <!-- Slide 11: KPIs -->
+                <div id="slide-11" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Métricas Clave para la Innovación (KPIs)</h2>
+                    <p class="text-gray-600 mb-6">Lo que no se mide, no se puede gestionar ni mejorar.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="border p-4 rounded-lg"><h4 class="font-bold text-indigo-700 mb-2">Métricas de Entrada (Input)</h4><p>Nº de ideas generadas, inversión en I+D, horas dedicadas a innovación.</p></div>
+                        <div class="border p-4 rounded-lg"><h4 class="font-bold text-indigo-700 mb-2">Métricas de Proceso (Process)</h4><p>Tasa de conversión de ideas a proyectos, tiempo promedio por fase, nº de prototipos creados.</p></div>
+                        <div class="border p-4 rounded-lg"><h4 class="font-bold text-teal-600 mb-2">Métricas de Salida (Output)</h4><p>Nº de nuevos productos lanzados, patentes registradas, ingresos por nuevos productos.</p></div>
+                        <div class="border p-4 rounded-lg"><h4 class="font-bold text-teal-600 mb-2">Métricas de Impacto (Impact)</h4><p>Aumento de la cuota de mercado, mejora en la satisfacción del cliente (NPS), ROI de la innovación.</p></div>
+                    </div>
+                </div>
+
+                <!-- Slide 12: Tools -->
+                <div id="slide-12" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Herramientas y Metodologías</h2>
+                    <div class="grid grid-cols-1 gap-4">
+                        <!-- Design Thinking -->
+                        <div class="card-hover-effect bg-gray-100 p-5 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg">Design Thinking</h3>
+                                <button class="toggle-details-btn text-indigo-600 font-semibold text-sm">+ información</button>
+                            </div>
+                            <p class="text-sm text-gray-600">Enfoque centrado en el humano para resolver problemas. Empatizar, Definir, Idear, Prototipar, Probar.</p>
+                            <div class="details-content mt-4 pt-4 border-t border-gray-200 text-sm text-gray-700">
+                                <strong class="text-gray-800">Caso de uso tecnológico:</strong> Una empresa de software SaaS utiliza Design Thinking para rediseñar su interfaz. El equipo de producto realiza entrevistas (Empatizar) con usuarios para entender sus frustraciones. Define el problema clave (Definir), realiza un brainstorming de soluciones (Idear), crea mockups interactivos (Prototipar) y los prueba con usuarios reales (Probar) antes de escribir una sola línea de código, asegurando que el producto final sea intuitivo y realmente útil.
+                            </div>
+                        </div>
+                        <!-- Lean Startup -->
+                        <div class="card-hover-effect bg-gray-100 p-5 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg">Lean Startup</h3>
+                                <button class="toggle-details-btn text-indigo-600 font-semibold text-sm">+ información</button>
+                            </div>
+                            <p class="text-sm text-gray-600">Ciclo Crear-Medir-Aprender para acelerar el aprendizaje validado y reducir el desperdicio.</p>
+                            <div class="details-content mt-4 pt-4 border-t border-gray-200 text-sm text-gray-700">
+                                <strong class="text-gray-800">Caso de uso tecnológico:</strong> Una startup quiere lanzar una nueva app móvil. En lugar de construirla por completo, aplica Lean Startup. Crea una landing page que describe la app y permite a los usuarios registrarse para un acceso temprano (Crear - MVP). Mide la tasa de conversión de visitantes a registros (Medir). Aprende que hay interés, pero los comentarios piden una función específica (Aprender). Pivota para priorizar esa función en el desarrollo real, evitando construir algo que nadie quería.
+                            </div>
+                        </div>
+                        <!-- Agile -->
+                        <div class="card-hover-effect bg-gray-100 p-5 rounded-lg">
+                             <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg">Agile (Scrum/Kanban)</h3>
+                                <button class="toggle-details-btn text-indigo-600 font-semibold text-sm">+ información</button>
+                            </div>
+                            <p class="text-sm text-gray-600">Marcos de trabajo para gestionar el desarrollo de productos de forma flexible e iterativa.</p>
+                             <div class="details-content mt-4 pt-4 border-t border-gray-200 text-sm text-gray-700">
+                                <strong class="text-gray-800">Caso de uso tecnológico:</strong> Un equipo de desarrollo de una plataforma de e-commerce utiliza Scrum (una metodología Agile). Organizan el trabajo en "sprints" de 2 semanas. Cada sprint entrega un pequeño incremento funcional del software (ej. un nuevo método de pago). Esto permite al equipo recibir feedback constante de los stakeholders, adaptarse rápidamente a cambios en los requisitos y entregar valor al negocio de forma continua, en lugar de esperar a un gran lanzamiento semestral.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 13: Success Case 1 -->
+                <div id="slide-13" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Caso de Éxito: <span class="text-yellow-500">Mercado Libre</span></h2>
+                    <p class="text-gray-600 mb-6">El gigante del e-commerce y fintech nacido en Argentina.</p>
+                    <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+                        <h3 class="font-semibold text-lg text-yellow-800 mb-2">Innovación Clave: Democratización del Comercio y las Finanzas</h3>
+                        <p class="text-yellow-700">Mercado Libre no se detuvo en ser una plataforma de subastas. Su sistema de innovación le permitió identificar y resolver problemas adyacentes al comercio electrónico:</p>
+                        <ul class="list-disc list-inside space-y-2 mt-4 text-yellow-700">
+                            <li><strong>Mercado Pago:</strong> Creó una solución de pagos segura para superar la desconfianza en las transacciones online en Latinoamérica.</li>
+                            <li><strong>Mercado Envíos:</strong> Desarrolló una red logística propia para solucionar el gran problema de la entrega de productos en la región.</li>
+                            <li><strong>Mercado Crédito:</strong> Ofrece financiación a compradores y vendedores, atacando la baja bancarización.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 14: Success Case 2 -->
+                <div id="slide-14" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Caso de Éxito: <span class="text-orange-500">Rappi</span></h2>
+                    <p class="text-gray-600 mb-6">La "super-app" de delivery que nació en Colombia y conquistó el continente.</p>
+                    <div class="bg-orange-50 border border-orange-200 p-6 rounded-lg">
+                        <h3 class="font-semibold text-lg text-orange-800 mb-2">Innovación Clave: El "Lo que sea"</h3>
+                        <p class="text-orange-700">La innovación disruptiva de Rappi fue ir más allá del delivery de comida. Su proceso se centró en la velocidad y la experimentación constante:</p>
+                        <ul class="list-disc list-inside space-y-2 mt-4 text-orange-700">
+                            <li><strong>Experimentación Rápida (Lean Startup):</strong> Lanzaron la función "RappiAntojo" o "Lo que sea", permitiendo a los usuarios pedir cualquier cosa, validando una necesidad de mercado mucho más amplia.</li>
+                            <li><strong>Verticalización:</strong> A partir de los datos de "Lo que sea", crearon verticales de negocio específicos como supermercados, farmacias, e incluso servicios como "RappiFavor".</li>
+                            <li><strong>Tecnología y Datos:</strong> Usan la data para optimizar rutas, predecir demanda y personalizar la experiencia del usuario.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Slide 15: Success Case 3 -->
+                <div id="slide-15" class="slide" style="display: none;">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Caso de Éxito: <span class="text-blue-500">Kavak</span></h2>
+                    <p class="text-gray-600 mb-6">La startup mexicana que revolucionó el mercado de coches de segunda mano.</p>
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                        <h3 class="font-semibold text-lg text-blue-800 mb-2">Innovación Clave: Confianza y Transparencia a través de la Tecnología</h3>
+                        <p class="text-blue-700">Kavak abordó los puntos de dolor de un mercado informal y lleno de desconfianza mediante un sistema controlado:</p>
+                        <ul class="list-disc list-inside space-y-2 mt-4 text-blue-700">
+                            <li><strong>Proceso Estandarizado:</strong> Crearon un sistema de inspección de 240 puntos para cada coche, ofreciendo una garantía que no existía en el mercado informal.</li>
+                            <li><strong>Plataforma Digital Integral:</strong> Centralizaron todo el proceso (compra, inspección, reacondicionamiento, venta, financiación y papeleo) en una sola plataforma tecnológica.</li>
+                            <li><strong>Modelo Basado en Datos:</strong> Utilizan algoritmos para determinar precios justos de compra y venta, eliminando la incertidumbre de la negociación.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 16: Conclusion -->
+                <div id="slide-16" class="slide active" style="display: block;">
+                    <div class="text-center">
+                        <svg class="w-20 h-20 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <h2 class="text-4xl font-bold text-gray-900 mt-4 mb-4">Empieza a Construir tu Sistema</h2>
+                        <p class="text-lg text-gray-600 max-w-3xl mx-auto">La sistematización no es burocracia. Es un marco flexible que da libertad a la creatividad para que genere un impacto real y medible.</p>
+                        <p class="mt-6 font-semibold text-indigo-700">La innovación sistemática es la ventaja competitiva más sostenible.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Navigation -->
+            <div class="bg-gray-100 p-4 flex justify-between items-center gap-4">
+                <div>
+                    <button id="prev-btn" class="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Anterior</button>
+                </div>
+                <div class="flex-grow text-center">
+                    <div id="slide-indicator" class="text-sm text-gray-600">Paso 16 de 16</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="next-btn" class="px-6 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors" disabled="">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element Selection ---
+            const presentationContainer = document.getElementById('presentation-container');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const slideIndicator = document.getElementById('slide-indicator');
+            
+            // Details Toggles
+            const toggleDetailsBtns = document.querySelectorAll('.toggle-details-btn');
+
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            // --- Functions ---
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    if (slide) {
+                        slide.style.display = i === index ? 'block' : 'none';
+                        slide.classList.toggle('active', i === index);
+                    }
+                });
+                currentSlide = index;
+                updateNavigation();
+            }
+
+            function updateNavigation() {
+                if (prevBtn) prevBtn.disabled = currentSlide === 0;
+                if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
+                if (slideIndicator) slideIndicator.textContent = `Paso ${currentSlide + 1} de ${totalSlides}`;
+            }
+            
+            // --- Event Listeners ---
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentSlide > 0) showSlide(currentSlide - 1);
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+                });
+            }
+
+            toggleDetailsBtns.forEach(btn => {
+                const detailsDiv = btn.closest('.card-hover-effect').querySelector('.details-content');
+                if (detailsDiv) {
+                    // Ensure it's closed on load by removing the 'visible' class
+                    detailsDiv.classList.remove('visible');
+                    btn.textContent = '+ información';
+                    
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent any default button behavior
+                        const isVisible = detailsDiv.classList.toggle('visible');
+                        btn.textContent = isVisible ? '- información' : '+ información';
+                    });
+                }
+            });
+            
+            // --- Initialize ---
+            showSlide(0);
+        });
+    </script>
+
+</body></html>
